@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres-sonar
+  namespace: devops
   labels:
     app: postgres-sonar
 spec:
@@ -16,7 +17,7 @@ spec:
     spec:
       containers:
       - name: postgres-sonar
-        image: postgres:latest
+        image: postgres:13.2
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5432
@@ -47,6 +48,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-sonar
+  namespace: devops
   labels:
     app: postgres-sonar
 spec:

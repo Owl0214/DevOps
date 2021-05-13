@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sonarqube
+  namespace: devops
   labels:
     app: sonarqube
 spec:
@@ -24,7 +25,7 @@ spec:
           privileged: true
       containers:
       - name: sonarqube
-        image: sonarqube:latest
+        image: sonarqube:8.9.0-community
         ports:
         - containerPort: 9000
         env:
@@ -73,6 +74,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: sonarqube
+  namespace: devops
   labels:
     app: sonarqube
 spec:
