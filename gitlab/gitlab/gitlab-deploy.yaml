@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab
+  namespace: devops
+  labels:
+    app: gitlab
+spec:
+  selector:
+    matchLabels:
+      app: gitlab
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gitlab
+    spec:
+      containers:
+      - name: gitlab
+        image : gitlab/gitlab-ce:13.11.4-ce.0
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: TZ
+          value: Asia/Shanghai
+        - name: GITLAB_TIMEZONE
+          value: Beijing
+
+        - name: GITLAB_SECRETS_DB_KEY_BASE
+          value: long-and-random-alpha-numeric-string
+        - name: GITLAB_SECRETS_SECRET_KEY_BASE
+          value: long-and-random-alpha-numeric-string
+        - name: GITLAB_SECRETS_OTP_KEY_BASE
+          value: long-and-random-alpha-numeric-string
+
+        - name: GITLAB_ROOT_PASSWORD
+          value: gitlab123
+        - name: GITLAB_ROOT_EMAIL
+          value: dukuan@haixiangjinfu.com
+
+        - name: GITLAB_HOST
+          value: gitlab.xxx.net
+        - name: GITLAB_PORT
+          value: "80"
+        - name: GITLAB_SSH_PORT
+          value: "22"
+
+        - name: GITLAB_NOTIFY_ON_BROKEN_BUILDS
+          value: "true"
+        - name: GITLAB_NOTIFY_PUSHER
+          value: "false"
+
+        - name: GITLAB_BACKUP_SCHEDULE
+          value: daily
+        - name: GITLAB_BACKUP_TIME
+          value: 01:00
+
+        - name: DB_TYPE
+          value: postgres
+        - name: DB_HOST
+          value: gitlab-postgre
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_USER
+          value: gitlabUser
+        - name: DB_PASS
+          value: "123456"
+        - name: DB_NAME
+          value: gitlabDB
+
+        - name: REDIS_HOST
+          value: gitlab-redis
+        - name: REDIS_PORT
+          value: "6379"
+        ports:
+        - name: http
+          containerPort: 80
+        - name: ssh
+          containerPort: 22
+        volumeMounts:
+        - mountPath: /var/opt/gitlab
+          name: data
+        - mountPath: /var/log/gitlab
+          name: log
+        - mountPath: /etc/gitlab
+          name: config
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 180
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+      volumes:
+      - name: data
+        nfs:
+          server: 10.0.38.82
+          path: /usr/nfs/data/gitlab/data
+      - name: config
+        nfs:
+          server: 10.0.38.82
+          path: /usr/nfs/data/gitlab/config
+      - name: log
+        nfs:
+          server: 10.0.38.82
+          path: /usr/nfs/data/gitlab/log

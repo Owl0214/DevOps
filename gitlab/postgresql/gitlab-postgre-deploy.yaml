@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab-postgre
+  namespace: devops
+  labels:
+    app: gitlab-postgre
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitlab-postgre
+  template:
+    metadata:
+      labels:
+        app: gitlab-postgre
+    spec:
+      containers:
+      - name: gitlab-postgre
+        image: postgres:13.2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: "gitlabDB"
+        - name: POSTGRES_USER
+          value: "gitlabUser"
+        - name: POSTGRES_PASSWORD 
+          value: "123456"
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2048Mi
+          requests:
+            cpu: 500m
+            memory: 1024Mi
+        volumeMounts:
+          - name: data
+            mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: gitlab-postgre-data
+

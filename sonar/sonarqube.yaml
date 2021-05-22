@@ -15,7 +15,7 @@ spec:
       labels:
         app: sonarqube
     spec:
-      nodeName: ldapdemo-worker-2
+      #nodeName: ldapdemo-worker-2
       initContainers:
       - name: init-sysctl
         image: busybox

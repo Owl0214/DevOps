@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nexus
+  name: nexus
+  namespace: devops
+spec:
+  ports:
+    - port: 8081
+      targetPort: 8081
+  selector:
+    app: nexus
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nexus
+  namespace: devops
+spec:
+  rules:
+  - host: nexus.sugon.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: nexus
+          servicePort: 8081
